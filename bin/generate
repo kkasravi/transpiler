@@ -1,0 +1,11 @@
+#!/bin/ksh
+cd /Developer/pegjs/examples
+rm -f javascript.js javascript.pegjs input
+cp ~/transpiler/src/javascript.pegjs .
+../bin/pegjs javascript.pegjs javascript.js
+head -n 9 ~/transpiler/src/parser.es >parser.es
+let firstpart="$(cat javascript.js|wc -l)-1"
+let secondpart="$(cat javascript.js|wc -l)-2"
+cat javascript.js | tail -n $firstpart| head -n $secondpart >>parser.es
+tail -n 8 ~/transpiler/src/parser.es >>parser.es
+mv parser.es ~/transpiler/src

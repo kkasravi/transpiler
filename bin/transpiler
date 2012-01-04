@@ -1,0 +1,20 @@
+#!/usr/bin/env node --debug-brk
+
+sys = require('sys');
+path = require('path');
+fs = require('fs'),
+require.paths.push(path.resolve('.')+'/lib');
+var log = require('log');
+var emitter = require('generator');
+var parser = require('parser').Parser;
+var transpiler = require('transpiler').Transpiler;
+try {
+  if(process.ARGV.length > 2) {
+    var source = fs.readFileSync(process.ARGV[2], 'utf-8');
+    var p = parser({source:source});
+    var t = transpiler({parser:p,emitter:emitter});
+    log.Logger.debug(t.stack.top().code);
+  }
+} catch(e) {
+  log.Logger.error('Could not parse '+process.ARGV[2]+': '+e.message);
+}

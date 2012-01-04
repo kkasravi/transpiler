@@ -1,0 +1,13 @@
+#!/bin/ksh
+for i in ast.es ecmascript.es generator.es parser.es transpiler.es; do
+  cp src/$i ~/node.client/tests/parsers/pegjs/harmony
+  cd ~/node.client
+  a=${i%.es}.js
+  tests/parsers/pegjs/harmony/emitter.js $i > $a
+  let startpart="$(cat $a|wc -l)-3"
+  let endpart="$startpart - 3"
+  cat $a | tail -n $startpart | head -n $endpart > ~/transpiler/lib/$a
+  rm $a
+  cd -
+done
+
