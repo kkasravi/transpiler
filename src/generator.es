@@ -8,8 +8,7 @@ module generator {
       try {
         @ast = properties.ast;
         @transpiler = properties.transpiler;
-console.log(ast.type);
-//        @ast && controller.Controller.publish(events.CustomEvent({type:@ast.getType(),detail:@ast}));
+//        @ast && controller.Controller.publish(events.CustomEvent({type:@ast.type,detail:@ast}));
       } catch(e) {
         log.Logger.error(this,e);
       }
@@ -161,7 +160,7 @@ console.log(ast.type);
         log.Logger.error(this,e);
       }
     }
-  };
+  }
   export class CaseClause extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
@@ -185,7 +184,7 @@ console.log(ast.type);
         log.Logger.error(this,e);
       }
     }
-  };
+  }
   export class Catch extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
@@ -207,7 +206,7 @@ console.log(ast.type);
         log.Logger.error(this,e);
       }
     }
-  };
+  }
   export class ClassDeclaration extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
@@ -244,7 +243,7 @@ console.log(ast.type);
                 statements = constructorDef.elements;
                 if(statements.length) {
                   statements.forEach(function(statement) {
-                    if(statement.getType() === 'PrivatePropertyDefinition') {
+                    if(statement.type === 'PrivatePropertyDefinition') {
                       privateDefs.push(statement);
                     } else {
                       constructorStatements.push(statement);
@@ -264,6 +263,24 @@ console.log(ast.type);
         stack.top().tab().add("var ");
         @transpiler.get(name).emit(stack);
         stack.top().add(" = (function() {").newLine().pushTab();
+        //heritage
+        if(heritage) {
+          stack.top().tab().add("");
+          @transpiler.get(name).emit(stack);
+          stack.top().add(".prototype = exports.");
+          @transpiler.get(heritage.name).emit(stack);
+          stack.top().add("();").newLine();
+          stack.top().tab().add("");
+          @transpiler.get(name).emit(stack);
+          stack.top().add(".prototype.constructor = ");
+          @transpiler.get(name).emit(stack);
+          stack.top().add(";").newLine();
+          stack.top().tab().add("var ");
+          @transpiler.get(heritage.name).emit(stack);
+          stack.top().add(" = exports.");
+          @transpiler.get(heritage.name).emit(stack);
+          stack.top().add(".constructor;").newLine();
+        }
         stack.top().tab().add("function ");
         @transpiler.get(name).emit(stack);
         stack.top().add("() {").newLine().pushTab();
@@ -345,24 +362,6 @@ console.log(ast.type);
         stack.top().popTab().tab().add("}").newLine();
         stack.top().tab().add("return ctor.apply(this,args) || this;").newLine();
         stack.top().popTab().tab().add("}").newLine();
-        //heritage
-        if(heritage) {
-          stack.top().tab().add("var ");
-          @transpiler.get(heritage.name).emit(stack);
-          stack.top().add(" = exports.");
-          @transpiler.get(heritage.name).emit(stack);
-          stack.top().add(".constructor;").newLine();
-          stack.top().tab().add("");
-          @transpiler.get(name).emit(stack);
-          stack.top().add(".prototype = exports.");
-          @transpiler.get(heritage.name).emit(stack);
-          stack.top().add("();").newLine();
-          stack.top().tab().add("");
-          @transpiler.get(name).emit(stack);
-          stack.top().add(".prototype.constructor = ");
-          @transpiler.get(name).emit(stack);
-          stack.top().add(";").newLine();
-        }
         //publicDefs
         if(publicDefs.length) {
           defaultParams = [];
@@ -386,9 +385,9 @@ console.log(ast.type);
                       if(param.value)  {
                         defaultParams.push(param);
                         stack.top().add('_');
-                        @transpiler().get(param.name).emit(stack);
+                        @transpiler.get(param.name).emit(stack);
                       } else {
-                        @transpiler().get(param).emit(stack);
+                        @transpiler.get(param).emit(stack);
                       }
                       if(i<params.length-1) {
                         stack.top().add(',');
@@ -675,6 +674,11 @@ console.log(ast.type);
     emit(stack) {
       try {
         var statements = @ast.statements;
+        stack.top().tab().add('default:').newLine().pushTab();
+        statements.forEach(function(statement) {
+          @transpiler.get(statement).emit(stack);
+        },this);
+        stack.top().popTab();
       } catch(e) {
         log.Logger.error(this,e);
       } 
@@ -987,9 +991,10 @@ console.log(ast.type);
     }
     emit(stack) {
       try {
+        stack.top().add("function ");
         var name = @ast.name;
-        name && stack.top().add(name);
-        stack.top().add("function(");
+        name && @transpiler.get(name).emit(stack);
+        stack.top().add("(");
         var params = @ast.params;
         params.forEach(function(param,i) {
           @transpiler.get(param).emit(stack);
@@ -1062,7 +1067,7 @@ console.log(ast.type);
       }  
     }
   };
-  export class ClassDeclaration extends Node {
+  export class ImportIdentifier extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
         Node.call(this, properties);
@@ -1316,8 +1321,9 @@ console.log(ast.type);
         var expression = @ast.expression;
         @transpiler.get(name).emit(stack);
         if(expression) {
-          stack.top().add(" from ");
+          stack.top().add(" = require(");
           @transpiler.get(expression).emit(stack);
+          stack.top().add(")");
         }
       } catch(e) {
         log.Logger.error(this,e);
@@ -1391,8 +1397,8 @@ console.log(ast.type);
     }
     emit(stack) {
       try {
-        stack.top().tab().add("module ");
-        var declarations = @ast.declarations
+        stack.top().tab().add("var ");
+        var declarations = @ast.declarations;
         declarations.forEach(function(declaration,i) {
           @transpiler.get(declaration).emit(stack);
           if(i<declarations.length-1) {
@@ -1465,6 +1471,24 @@ console.log(ast.type);
       }  
     }
   };
+  export class ParenthesizedExpression extends Node {
+    constructor(properties={ast:null,transpiler:null}) {
+      try {
+      Node.call(this, properties);
+      } catch(e) {
+        log.Logger.error(this,e);
+      }  
+    }
+    emit(stack) {
+      try {
+        stack.top().add("(");
+        @transpiler.get(@ast.expression).emit(stack);
+        stack.top().add(")");
+      } catch(e) {
+        log.Logger.error(this,e);
+      }  
+    }
+  }
   export class PostfixExpression extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
@@ -1781,7 +1805,10 @@ console.log(ast.type);
     emit(stack) {
       try {
         var value = @ast.value;
-        var quote = /"/.test(value) ? "'" : '"';
+        var quote = @ast.quote;
+        if(value==='\n'){
+          value='\\n';
+        }
         stack.top().add(quote+value+quote);
       } catch(e) {
         log.Logger.error(this,e);

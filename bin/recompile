@@ -1,0 +1,36 @@
+#!/bin/ksh
+for i in src/*.es; do
+  a=${i##*/}
+  a=${a%.es}.js
+  bin/transpiler $i > $a
+  let startpart="$(cat $a|wc -l)-3"
+  let endpart="$startpart - 3"
+  cat $a | tail -n $startpart | head -n $endpart > lib/${a}.new
+  rm $a
+done
+let p1="$(grep -n 'this.tree=' lib/parser.js.new | awk 'BEGIN {FS=":"}{ print $1}')-1"
+let p2="$(cat lib/parser.js.new|wc -l) - $p1 - 1"
+cat lib/parser.js.new | head -n $p1 > parser.js
+echo '            this.tree=(function () {' >> parser.js
+cat src/parser >> parser.js
+echo '            })().parse(this.source);' >> parser.js
+cat lib/parser.js | tail -n $p2 >> parser.js
+mv parser.js lib/parser.js.new
+ex -s lib/generator.js.new <<?
+%s/value='\\\\n';/value='\\\\\\\\n';/
+w
+q
+?
+for i in lib/*.new; do
+  a=${i%.new}
+  diff $i $a >/dev/null
+  if [ $? != "0" ]; then
+    echo $i failed
+  else
+    echo 'no differences in recompilation of '  $a 
+    mv $i $a
+  fi
+done
+
+
+

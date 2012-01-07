@@ -617,11 +617,11 @@ module ast {
   };
   export class ModuleDeclaration extends Declaration {
     constructor(properties={name:null,value:null}) {
-      private name, value;
+      private name, expression;
       try {
         Declaration.call(this, properties);
         @name = properties.name;
-        @value = properties.value;
+        @expression = properties.expression;
       } catch(e) {
         log.Logger.error(this,e);
       }
@@ -630,7 +630,7 @@ module ast {
       return {name:@name};
     }
     get children() {
-      return [@value];
+      return [@expression];
     }
   };
   export class ModuleExpression extends Expression {
@@ -1179,8 +1179,10 @@ module ast {
   };
   export class StringLiteral extends Literal {
     constructor(properties={}) {
+      private quote;
       try {
         Literal.call(this, properties);
+        @quote = properties.quote;
       } catch(e) {
         log.Logger.error(this,e);
       }

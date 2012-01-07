@@ -5,7 +5,7 @@ module transpiler {
       private append,code,indentValue,prepend;
       try {
         @append = properties.append;
-        @code = properties.code;
+        @code = properties.code||"";
         @indentValue = properties.indentValue;
         @prepend = properties.prepend;
       } catch(e) {

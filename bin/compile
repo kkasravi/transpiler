@@ -10,4 +10,16 @@ for i in ast.es ecmascript.es generator.es parser.es transpiler.es; do
   rm $a
   cd -
 done
-
+let p1="$(grep -n 'this.tree=' lib/parser.js | awk 'BEGIN {FS=":"}{ print $1}')-1"
+let p2="$(cat lib/parser.js|wc -l) - $p1 - 1"
+cat lib/parser.js | head -n $p1 > parser.js
+echo '            this.tree=(function () {' >> parser.js
+cat src/parser >> parser.js
+echo '            })().parse(this.source);' >> parser.js
+cat lib/parser.js | tail -n $p2 >> parser.js
+mv parser.js lib
+ex -s lib/generator.js <<?
+%s/value='\\\\n';/value='\\\\\\\\n';/
+w
+q
+?
