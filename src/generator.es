@@ -1643,7 +1643,13 @@ module generator {
       try {
         var name = @ast.name;
         var value = @ast.value;
-        stack.top().tab().add(name).add(":");
+        if(typeof(name) === 'string') {
+          stack.top().tab().add(name).add(":");
+        } else {
+          stack.top().tab().add("");
+          @transpiler.get(name).emit(stack);
+          stack.top().add(":");
+        }
         @transpiler.get(value).emit(stack);
       } catch(e) {
         log.Logger.error(this,e);

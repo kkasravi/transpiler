@@ -23,13 +23,13 @@ q
 ?
 for i in lib/*.new; do
   a=${i%.new}
-  diff $i $a >/dev/null
-  if [ $? != "0" ]; then
-    echo $i failed
-  else
-    echo 'no differences in recompilation of '  $a 
+#  diff $i $a >/dev/null
+#  if [ $? != "0" ]; then
+#    echo $i failed
+#  else
+#    echo 'no differences in recompilation of '  $a 
     mv $i $a
-  fi
+#  fi
 done
 
 
