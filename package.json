@@ -1,12 +1,12 @@
 {
-  "name"          : "require",
-  "description"   : "implementation of commonjs require in es.next",
-  "url"           : "http://kkasravi.github.com/require/",
-  "keywords"      : ["commonjs", "functional", "require", "module", "es.next"],
+  "name"          : "transpiler",
+  "description"   : "variation of es.next",
+  "url"           : "http://kkasravi.github.com/transpiler/",
+  "keywords"      : ["functional", "es.next"],
   "author"        : "Kam Kasravi <kkasravi@yahoo.com>",
   "contributors"  : [],
-  "dependencies"  : {},
+  "dependencies"  : {require},
   "lib"           : ".",
-  "main"          : "require.js",
+  "main"          : "src/ecmascript.js",
   "version"       : "0.1"
 }
