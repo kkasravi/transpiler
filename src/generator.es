@@ -267,19 +267,26 @@ module generator {
         if(heritage) {
           stack.top().tab().add("");
           @transpiler.get(name).emit(stack);
-          stack.top().add(".prototype = exports.");
-          @transpiler.get(heritage.name).emit(stack);
+          if(heritage.name.base) {
+            stack.top().add(".prototype = ");
+            @transpiler.get(heritage.name).emit(stack);
+          } else {
+            stack.top().add(".prototype = exports.");
+            @transpiler.get(heritage.name).emit(stack);
+          }
           stack.top().add("();").newLine();
           stack.top().tab().add("");
           @transpiler.get(name).emit(stack);
           stack.top().add(".prototype.constructor = ");
           @transpiler.get(name).emit(stack);
           stack.top().add(";").newLine();
-          stack.top().tab().add("var ");
-          @transpiler.get(heritage.name).emit(stack);
-          stack.top().add(" = exports.");
-          @transpiler.get(heritage.name).emit(stack);
-          stack.top().add(".constructor;").newLine();
+          if(!heritage.name.base) {
+            stack.top().tab().add("var ");
+            @transpiler.get(heritage.name).emit(stack);
+            stack.top().add(" = exports.");
+            @transpiler.get(heritage.name).emit(stack);
+            stack.top().add(".constructor;").newLine();
+          }
         }
         stack.top().tab().add("function ");
         @transpiler.get(name).emit(stack);
