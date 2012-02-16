@@ -1045,9 +1045,9 @@ module generator {
         log.Logger.error(this,e);
       }  
     }
-    emit(stack) {
+    emit(stack, notab) {
       try {
-        stack.top().tab().add("if(");
+        notab ? stack.top().add("if(") : stack.top().tab().add("if(");
         var condition = @ast.condition;
         @transpiler.get(condition).emit(stack);
         stack.top().add(") {").newLine().pushTab();
@@ -1055,9 +1055,17 @@ module generator {
         @transpiler.get(ifStatement).emit(stack);
         var elseStatement = @ast.elseStatement;
         if(elseStatement) {
-          stack.top().popTab().tab().add("} else {").newLine().pushTab();
-          @transpiler.get(elseStatement).emit(stack);
-          stack.top().popTab().tab().add("}").newLine();
+          switch(elseStatement.type) {
+            case 'IfStatement':
+              stack.top().popTab().tab().add("} else ");
+              @transpiler.get(elseStatement).emit(stack,true);
+              break;
+            default:
+              stack.top().popTab().tab().add("} else {").newLine().pushTab();
+              @transpiler.get(elseStatement).emit(stack);
+              stack.top().popTab().tab().add("}").newLine();
+              break;
+          }
         } else {
           stack.top().popTab().tab().add("}").newLine();
         }
