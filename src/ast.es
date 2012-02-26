@@ -452,6 +452,15 @@ module ast {
       }
     }
   };
+  export class DebuggerStatement extends Statement {
+    constructor(properties={}) {
+      try {
+        Statement.call(this, properties);
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+  };
   export class Declaration extends Statement {
     constructor(properties={}) {
       try {
