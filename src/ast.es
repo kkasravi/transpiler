@@ -34,6 +34,28 @@ module ast {
       return @type;
     }
   };
+  export class MultiLineComment extends Node {
+    constructor(properties={}) {
+      private comments;
+      try {
+        Node.call(this, properties);
+        @comments = properties.comments;
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+  };
+  export class SingleLineComment extends Node {
+    constructor(properties={}) {
+      private comment;
+      try {
+        Node.call(this, properties);
+        @comment = properties.comment;
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+  };
   export class Expression extends Node {
     constructor(properties={}) {
       try {

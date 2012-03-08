@@ -6,6 +6,6 @@ cp ~/transpiler/src/javascript.pegjs .
 head -n 9 ~/transpiler/src/parser.es >parser.es
 let firstpart="$(cat javascript.js|wc -l)-1"
 let secondpart="$(cat javascript.js|wc -l)-2"
-cat javascript.js | tail -n $firstpart| head -n $secondpart >>parser.es
+cat javascript.js | tail -n $firstpart| head -n $secondpart >>parser
 tail -n 8 ~/transpiler/src/parser.es >>parser.es
-mv parser.es ~/transpiler/src
+mv parser ~/transpiler/src

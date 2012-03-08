@@ -1418,6 +1418,22 @@ module generator {
       }  
     }
   };
+  export class MultiLineComment extends Node {
+    constructor(properties={ast:null,transpiler:null}) {
+      try {
+        Node.call(this, properties);
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+    emit(stack) {
+      try {
+        var comments = @ast.comments;
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+  };
   export class NewOperator extends Node {
     constructor(properties={ast:null,transpiler:null}) {
       try {
@@ -1787,6 +1803,22 @@ module generator {
       } catch(e) {
         log.Logger.error(this,e);
       }  
+    }
+  };
+  export class SingleLineComment extends Node {
+    constructor(properties={ast:null,transpiler:null}) {
+      try {
+        Node.call(this, properties);
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
+    }
+    emit(stack) {
+      try {
+        var comment = @ast.comment;
+      } catch(e) {
+        log.Logger.error(this,e);
+      }
     }
   };
   export class StaticPropertyDefinition extends Node {

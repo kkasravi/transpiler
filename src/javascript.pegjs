@@ -25,8 +25,20 @@ LineTerminatorSequence "end of line"
   / "\u2029" // paragraph separator
 
 Comment "comment"
-  = MultiLineComment
-  / SingleLineComment
+  = comments:MultiLineComment {
+    return ast.MultiLineComment({
+      loc: ast.SourceLocation({source:input,start:ast.Position({line:pos0}),end:ast.Position({line:pos})}),
+      type: "MultiLineComment",
+      comments: comments
+    });
+  }
+  / comment:SingleLineComment {
+    return ast.SingleLineComment({
+      loc: ast.SourceLocation({source:input,start:ast.Position({line:pos0}),end:ast.Position({line:pos})}),
+      type: "SingleLineComment",
+      comment: comment
+    });
+  }
 
 MultiLineComment
   = "/*" (!"*/" SourceCharacter)* "*/"
