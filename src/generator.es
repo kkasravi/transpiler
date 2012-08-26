@@ -1524,8 +1524,8 @@ module generator {
       try {
         var operator = @ast.operator;
         var expression = @ast.expression;
-        stack.top().add(operator);
         @transpiler.get(expression).emit(stack);
+        stack.top().add(operator);
       } catch(e) {
         log.Logger.error(this,e);
       }  
