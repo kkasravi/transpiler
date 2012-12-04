@@ -861,7 +861,7 @@ module generator {
         var iterator = @ast.iterator;
         var collection = @ast.collection;
         var statement = @ast.statement;
-        stack.top().tab().add('for(');
+        stack.top().tab().add('for(var ');
         @transpiler.get(iterator).emit(stack);
         stack.top().add(' in ');
         @transpiler.get(collection).emit(stack);
